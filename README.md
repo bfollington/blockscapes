@@ -1,8 +1,8 @@
-# fxhash-r3f-template
+# blockscapes
 
 This is a quickstart template based on `create-react-app` for creating [`fxhash`](https://www.fxhash.xyz) tokens using [`react-three-fiber`](https://github.com/pmndrs/react-three-fiber) + `typescript`.
 
-![image](https://user-images.githubusercontent.com/5009316/142333930-565052ab-a860-4081-b6b5-3c174e5a17a9.png)
+<img width="785" alt="Screen Shot 2021-12-13 at 11 43 53 pm" src="https://user-images.githubusercontent.com/5009316/145823304-5ab92259-61c4-449a-9d06-3c87996f8172.png">
 
 ## Development
 
