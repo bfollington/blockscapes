@@ -21,6 +21,7 @@
     "rot-js": "^2.2.0",
     "three": "^0.134.0",
     "typescript": "^4.1.2",
+    "use-spritesheet": "^0.1.2",
     "web-vitals": "^1.0.1"
   },
   "scripts": {

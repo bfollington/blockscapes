@@ -11,15 +11,12 @@ import model from "./resources/single-block.glb";
 import model2 from "./resources/single-block-flower.glb";
 import model3 from "./resources/single-block-grassy.glb";
 import { InstancedMesh } from "three";
-import { GRID } from "./App";
+import { D, GRID, H, W } from "./App";
+import { choose } from "./list";
 
 type Props = {
   position?: Vector3;
 };
-
-function choose<T>(l: T[]) {
-  return l[Math.floor(Math.random() * l.length)];
-}
 
 const temp = new THREE.Object3D();
 export function InstancedBlock({
@@ -47,7 +44,7 @@ export function InstancedBlock({
   return (
     <instancedMesh
       ref={ref}
-      args={[nodes.Cube.geometry, materials.delver, 32768]}
+      args={[nodes.Cube.geometry, materials.delver, W * D * H]}
     >
       {/* <meshNormalMaterial attach="material" /> */}
     </instancedMesh>
