@@ -1,7 +1,7 @@
-import React, { Suspense, useMemo, useRef } from "react";
+import React, { Suspense, useEffect, useMemo, useRef } from "react";
 import "./App.css";
 import { Canvas, useFrame, Vector3 } from "@react-three/fiber";
-import { Box, OrbitControls, Sky } from "@react-three/drei";
+import { Box, OrbitControls, Sky, Stars } from "@react-three/drei";
 import { fxhash, fxrand, registerFeatures } from "./fxhash";
 import GrassBlock, { InstancedBlock } from "./GrassBlock";
 import * as THREE from "three";
@@ -20,6 +20,12 @@ import tree3 from "./resources/tree_3.png";
 import { Group } from "three";
 import { usePixelTexture } from "use-spritesheet/lib";
 import { choose } from "./list";
+import {
+  Bloom,
+  DepthOfField,
+  EffectComposer,
+  Vignette,
+} from "@react-three/postprocessing";
 
 function key(x: number, y: number, z: number) {
   return `${x},${y},${z}`;
@@ -29,6 +35,9 @@ export const W = 48;
 export const H = 48;
 export const D = 16;
 const NOISE_SCALE = 0.05 + fxrand() * 0.07;
+const tallness = Math.round(D / 2 + fxrand() * (D / 2));
+
+registerFeatures({ tallness: tallness, scale: NOISE_SCALE });
 
 const World = () => {
   // const blocks = useMemo(() => {
@@ -67,7 +76,6 @@ const World = () => {
     n.seed(fxrand());
     const blocks = [] as [number, number, number, number][];
     const occupancyMap: { [id: string]: number } = {};
-    const tallness = Math.round(D / 2 + fxrand() * (D / 2));
 
     for (let x = 0; x < W; x++) {
       for (let y = 0; y < D; y++) {
@@ -103,7 +111,7 @@ const World = () => {
       }
     }
 
-    return [blocks, occupancyMap];
+    return [blocks, occupancyMap, tallness];
   }, []);
 
   const ref = useRef<Group>();
@@ -116,13 +124,6 @@ const World = () => {
   return (
     <group ref={ref}>
       <group position={[-(GRID * W) / 2, 0, -(GRID * H) / 2]}>
-        {/* {blocks.map(([x, y, z]) => (
-    <GrassBlock
-      key={`${x},${y},${z}`}
-      position={[x * GRID, y * GRID, z * GRID]}
-    />
-  ))} */}
-
         <InstancedBlock
           model={model3}
           blocks={blocks.filter(([, , , p]) => p > 0.5 && p > 0)}
@@ -204,36 +205,46 @@ const Tree = (props: any) => {
 };
 
 function App() {
-  console.log(fxhash());
-  console.log(fxrand());
-
-  // WARNING: do not include meaningless or testing features in your release build
-  registerFeatures({ hello: "world" });
-
-  const floor = useMemo(() => {}, []);
-
   return (
     <div className="App">
-      <Canvas camera={{ position: [6, 6, 6] }} gl={{}}>
-        <color attach="background" args={["black"]} />
+      <Canvas camera={{ position: [8, 8, 8], zoom: 1 }} gl={{}}>
+        {/* <Sky azimuth={0.05} inclination={0.05} distance={1000} /> */}
+        <Stars />
+        <color attach="background" args={["#050609"]} />
 
         <pointLight
-          position={[-3, 10, 3]}
-          color="red"
+          position={[-3, 10, 2.5]}
+          color="orange"
           intensity={0.5 * fxrand()}
         />
         <pointLight
-          position={[3, 10, -3]}
-          color="blue"
+          position={[3, 10, -2.5]}
+          color="purple"
           intensity={0.5 * fxrand()}
         />
         <Suspense fallback={null}>
-          <World />
+          <group position={[0, 3, 0]}>
+            <World />
+          </group>
         </Suspense>
         <OrbitControls
           minPolarAngle={Math.PI / 10}
           maxPolarAngle={Math.PI / 1.5}
         />
+        <EffectComposer>
+          {/* <DepthOfField
+            focusDistance={0}
+            focalLength={0.02}
+            bokehScale={2}
+            height={480}
+          /> */}
+          <Bloom
+            luminanceThreshold={0.3}
+            luminanceSmoothing={0.6}
+            height={300}
+          />
+          <Vignette eskil={false} offset={0.1} darkness={0.85} />
+        </EffectComposer>
       </Canvas>
     </div>
   );
